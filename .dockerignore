@@ -1,0 +1,21 @@
+# Файлы и папки, которые НЕ нужно отправлять в Docker при сборке.
+# Так сборка быстрее, а в образ не попадает лишнее.
+
+.git
+.venv
+venv
+__pycache__
+*.pyc
+.pytest_cache
+.coverage
+coverage.xml
+htmlcov
+test-results.xml
+models
+tests
+.vscode
+.idea
+*.md
+Jenkinsfile
+k8s
+jenkins
