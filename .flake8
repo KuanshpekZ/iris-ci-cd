@@ -1,0 +1,5 @@
+[flake8]
+# Максимальная длина строки кода
+max-line-length = 100
+# Папки, которые проверять не нужно
+exclude = .venv,venv,.git,__pycache__,models

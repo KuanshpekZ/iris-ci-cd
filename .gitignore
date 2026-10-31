@@ -1,0 +1,23 @@
+# Файлы и папки, которые Git не должен сохранять
+
+# Виртуальное окружение Python
+.venv/
+venv/
+
+# Служебные файлы Python
+__pycache__/
+*.pyc
+
+# Обученная модель: она создаётся автоматически, хранить её в Git не нужно
+models/
+
+# Результаты тестов и покрытия
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+test-results.xml
+
+# Настройки редакторов
+.vscode/
+.idea/
