@@ -1,0 +1,29 @@
+# ---------------------------------------------------------------
+# Запуск Jenkins в Docker.
+# Команда (из папки jenkins):  docker compose up -d --build
+# ---------------------------------------------------------------
+services:
+  jenkins:
+    build: .                      # собрать образ по Dockerfile из этой папки
+    image: iris-jenkins:2.580.2   # имя собранного образа
+    container_name: jenkins       # имя контейнера
+    # root нужен, чтобы Jenkins мог управлять Docker через сокет.
+    # Для учебного стенда на своём компьютере это допустимо.
+    user: root
+    restart: unless-stopped       # автозапуск вместе с Docker Desktop
+    ports:
+      - "8080:8080"               # веб-интерфейс: http://localhost:8080
+    volumes:
+      # Все данные Jenkins (настройки, задачи, история сборок)
+      # хранятся в томе и переживают перезапуск контейнера
+      - jenkins_home:/var/jenkins_home
+      # "Пульт управления" Docker: через него Jenkins собирает образы
+      # и запускает контейнеры рядом с собой
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TZ=Asia/Almaty
+      - JAVA_OPTS=-Duser.timezone=Asia/Almaty
+
+volumes:
+  jenkins_home:
+    name: jenkins_home
