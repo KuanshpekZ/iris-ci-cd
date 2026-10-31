@@ -1,6 +1,7 @@
 // ---------------------------------------------------------------
-// Jenkinsfile — CI-пайплайн проекта Iris Classifier
+// Jenkinsfile — CI/CD-пайплайн проекта Iris Classifier
 // Стадии: Checkout -> Install -> Lint -> Unit tests -> Docker build -> Smoke test
+//         -> Push to Docker Hub
 // ---------------------------------------------------------------
 pipeline {
     // Выполнять на любом доступном исполнителе (у нас это сам Jenkins)
@@ -121,11 +122,42 @@ pipeline {
                 }
             }
         }
+
+        stage('Push to Docker Hub') {
+            steps {
+                // Логин и токен берутся из хранилища Jenkins Credentials (ID: dockerhub-credentials).
+                // В коде их нет, а в логе Jenkins токен заменяется звёздочками.
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials',
+                                                  usernameVariable: 'DOCKERHUB_USER',
+                                                  passwordVariable: 'DOCKERHUB_TOKEN')]) {
+                    sh '''
+                        echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USER" --password-stdin
+
+                        docker tag $IMAGE_NAME:$IMAGE_TAG $DOCKERHUB_USER/$IMAGE_NAME:$IMAGE_TAG
+                        docker tag $IMAGE_NAME:$IMAGE_TAG $DOCKERHUB_USER/$IMAGE_NAME:latest
+
+                        docker push $DOCKERHUB_USER/$IMAGE_NAME:$IMAGE_TAG
+                        docker push $DOCKERHUB_USER/$IMAGE_NAME:latest
+                    '''
+                    script {
+                        // Полное имя образа в Docker Hub, понадобится на этапе деплоя
+                        env.DOCKERHUB_IMAGE = "${env.DOCKERHUB_USER}/${env.IMAGE_NAME}"
+                        currentBuild.description = "${env.DOCKERHUB_IMAGE}:${env.IMAGE_TAG}"
+                    }
+                }
+            }
+            post {
+                always {
+                    // Выходим из Docker Hub, чтобы не оставлять токен на сервере
+                    sh 'docker logout || true'
+                }
+            }
+        }
     }
 
     post {
         success {
-            echo "Сборка успешна: образ ${env.IMAGE_NAME}:${env.IMAGE_TAG} готов"
+            echo "Сборка успешна: образ ${env.DOCKERHUB_IMAGE}:${env.IMAGE_TAG} опубликован в Docker Hub"
         }
         failure {
             echo 'Сборка упала: откройте стадию, отмеченную красным, и посмотрите лог'
