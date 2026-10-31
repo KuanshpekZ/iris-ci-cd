@@ -1,4 +1,4 @@
-# Iris Classifier — CI/CD для исследовательского Python-проекта
+<img width="955" height="939" alt="image" src="https://github.com/user-attachments/assets/c26d1b00-9136-4939-9340-9915cf90ddc2" /># Iris Classifier — CI/CD для исследовательского Python-проекта
 
 Учебный проект: модель машинного обучения, которая определяет вид ириса
 (setosa, versicolor, virginica) по четырём измерениям цветка, и REST API
@@ -47,3 +47,4 @@ uvicorn src.api:app --reload   # запустить API
 ```json
 {"sepal_length": 5.1, "sepal_width": 3.5, "petal_length": 1.4, "petal_width": 0.2}
 ```
+Автор: Куаншпек Жансая
