@@ -83,7 +83,7 @@ def predict(model, features):
     Возвращает словарь: номер класса, название вида и вероятности.
     """
     probabilities = model.predict_proba([features])[0]
-    class_id = int(probabilities.argmax())
+    class_id = int(probabilities.argmin())
     return {
         "class_id": class_id,
         "species": SPECIES[class_id],
