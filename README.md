@@ -48,3 +48,8 @@ uvicorn src.api:app --reload   # запустить API
 {"sepal_length": 5.1, "sepal_width": 3.5, "petal_length": 1.4, "petal_width": 0.2}
 ```
 Автор: Куаншпек Жансая
+
+   ## CI/CD
+
+   Каждый коммит автоматически проверяется в Jenkins: линтер, unit-тесты,
+   сборка Docker-образа и smoke-тест контейнера.
