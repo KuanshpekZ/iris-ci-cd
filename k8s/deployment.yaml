@@ -1,0 +1,43 @@
+# Deployment: Kubernetes держит запущенными 2 копии (пода) нашего сервиса
+# и сам перезапускает их при сбое
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iris-api
+  labels:
+    app: iris-api
+spec:
+  replicas: 2                     # сколько копий сервиса держать запущенными
+  selector:
+    matchLabels:
+      app: iris-api
+  template:
+    metadata:
+      labels:
+        app: iris-api
+    spec:
+      containers:
+        - name: iris-api
+          image: batyrfly/iris-api:latest   # образ, который опубликовал Jenkins
+          imagePullPolicy: IfNotPresent     # скачивать из Docker Hub, только если образа нет локально
+          ports:
+            - containerPort: 8000
+          readinessProbe:                   # готов ли под принимать запросы
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:                    # жив ли под (если нет - перезапуск)
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
